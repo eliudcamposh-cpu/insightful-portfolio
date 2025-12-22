@@ -25,7 +25,7 @@ export const Hero = ({ name }: HeroProps) => {
           Business Intelligence Analyst
         </p>
         <p className="text-lg md:text-xl text-muted-foreground mb-10">
-          Transforming data into business insights
+          Turning raw data into strategic decisions
         </p>
         <Button
           onClick={scrollToPortfolio}
