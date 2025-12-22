@@ -5,7 +5,7 @@ const projects = [
   {
     title: "Sales Performance Dashboard",
     description:
-      "Built an interactive dashboard to track regional sales performance, identify top-performing products, and forecast quarterly revenue trends.",
+      "Designed and deployed a real-time dashboard that consolidated regional sales data, surfaced top-performing SKUs, and enabled leadership to track progress against quarterly targets.",
     tools: ["SQL", "Looker Studio"],
     dashboardUrl: "#",
     githubUrl: "#",
@@ -13,7 +13,7 @@ const projects = [
   {
     title: "Customer Churn Analysis",
     description:
-      "Analyzed customer behavior patterns to identify churn indicators, enabling the marketing team to implement targeted retention strategies.",
+      "Conducted end-to-end analysis of user behavior data to pinpoint early churn signals, delivering insights that informed a retention campaign projected to reduce attrition by 12%.",
     tools: ["SQL", "Google Sheets", "Looker Studio"],
     dashboardUrl: "#",
     githubUrl: "#",
@@ -21,7 +21,7 @@ const projects = [
   {
     title: "Inventory Optimization Report",
     description:
-      "Developed an automated reporting system to monitor stock levels, predict demand, and reduce inventory holding costs by 15%.",
+      "Built an automated reporting pipeline that tracks stock levels and forecasts demand, contributing to a 15% reduction in holding costs through data-driven replenishment recommendations.",
     tools: ["SQL", "Google Sheets"],
     dashboardUrl: "#",
     githubUrl: "#",
