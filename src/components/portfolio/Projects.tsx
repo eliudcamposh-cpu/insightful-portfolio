@@ -3,26 +3,26 @@ import { ExternalLink, Github } from "lucide-react";
 
 const projects = [
   {
-    title: "Sales Performance Dashboard",
+    title: "Marketing Campaign Performance Analysis",
     description:
-      "Designed and deployed a real-time dashboard that consolidated regional sales data, surfaced top-performing SKUs, and enabled leadership to track progress against quarterly targets.",
-    tools: ["SQL", "Looker Studio"],
-    dashboardUrl: "#",
-    githubUrl: "#",
-  },
-  {
-    title: "Customer Churn Analysis",
-    description:
-      "Conducted end-to-end analysis of user behavior data to pinpoint early churn signals, delivering insights that informed a retention campaign projected to reduce attrition by 12%.",
+      "Analyzed which marketing campaigns generate real business value versus those that only increase acquisition costs. Evaluated ROAS, CPA, and channel performance over time to optimize budget allocation.",
     tools: ["SQL", "Google Sheets", "Looker Studio"],
     dashboardUrl: "#",
     githubUrl: "#",
   },
   {
-    title: "Inventory Optimization Report",
+    title: "Sales & Profitability Dashboard",
     description:
-      "Built an automated reporting pipeline that tracks stock levels and forecasts demand, contributing to a 15% reduction in holding costs through data-driven replenishment recommendations.",
-    tools: ["SQL", "Google Sheets"],
+      "Built a comprehensive dashboard to determine if sales growth aligns with profitability. Analyzed revenue vs cost, product and category margins, and identified trends and seasonality patterns.",
+    tools: ["SQL", "Google Sheets", "Looker Studio"],
+    dashboardUrl: "#",
+    githubUrl: "#",
+  },
+  {
+    title: "User Retention & Churn Analysis",
+    description:
+      "Investigated where and why users drop off through cohort analysis, retention and churn metrics, and behavioral insights to inform retention strategies.",
+    tools: ["SQL", "Google Sheets", "Looker Studio"],
     dashboardUrl: "#",
     githubUrl: "#",
   },
