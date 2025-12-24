@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ArrowDown } from "lucide-react";
+import profilePhoto from "@/assets/profile-photo.png";
 
 interface HeroProps {
   name: string;
@@ -18,6 +19,13 @@ export const Hero = ({ name }: HeroProps) => {
       </div>
       
       <div className="text-center max-w-3xl mx-auto">
+        <div className="mb-8">
+          <img
+            src={profilePhoto}
+            alt="Profile photo"
+            className="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto object-cover border-4 border-primary/20 shadow-lg"
+          />
+        </div>
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4">
           {name}
         </h1>
