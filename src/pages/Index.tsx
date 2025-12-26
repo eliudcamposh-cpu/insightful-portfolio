@@ -4,6 +4,7 @@ import { TechStack } from "@/components/portfolio/TechStack";
 import { Projects } from "@/components/portfolio/Projects";
 import { Contact } from "@/components/portfolio/Contact";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import BackgroundPattern from "@/components/BackgroundPattern";
 
 const Index = () => {
   const { settings, loading } = useSiteSettings();
@@ -11,13 +12,15 @@ const Index = () => {
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
+        <BackgroundPattern />
         <p className="text-muted-foreground">Cargando...</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen relative">
+      <BackgroundPattern />
       <Hero 
         name={settings?.name || "Your Name"} 
         profileImageUrl={settings?.profile_image_url}
