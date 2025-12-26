@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useProjects } from "@/hooks/useProjects";
 
 export const Projects = () => {
@@ -41,6 +42,18 @@ export const Projects = () => {
                   </span>
                 ))}
               </div>
+              
+              {/* Case Study Button */}
+              <div className="mb-3">
+                <Button variant="default" size="sm" className="w-full gap-2" asChild>
+                  <Link to={`/case-study/${project.id}`}>
+                    <FileText className="h-4 w-4" />
+                    Ver Case Study
+                  </Link>
+                </Button>
+              </div>
+              
+              {/* Existing Dashboard & GitHub buttons */}
               <div className="flex gap-3">
                 {project.dashboard_url && project.dashboard_url !== '#' && (
                   <Button variant="outline" size="sm" className="flex-1 gap-2" asChild>
