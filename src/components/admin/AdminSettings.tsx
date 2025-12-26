@@ -1,16 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
-import { Save } from 'lucide-react';
+import { Save, Upload, X } from 'lucide-react';
 
 export const AdminSettings = () => {
   const { settings, loading, refetch } = useSiteSettings();
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -101,12 +103,80 @@ export const AdminSettings = () => {
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="profile_image_url">URL de foto de perfil</Label>
+          <Label htmlFor="profile_image">Foto de perfil</Label>
+          <div className="flex items-center gap-4">
+            {formData.profile_image_url && (
+              <div className="relative">
+                <img 
+                  src={formData.profile_image_url} 
+                  alt="Preview" 
+                  className="w-16 h-16 rounded-full object-cover border border-border"
+                />
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, profile_image_url: '' })}
+                  className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+            <div className="flex-1 flex gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  
+                  setUploading(true);
+                  const fileExt = file.name.split('.').pop();
+                  const fileName = `profile-${Date.now()}.${fileExt}`;
+                  
+                  const { error: uploadError } = await supabase.storage
+                    .from('profile-images')
+                    .upload(fileName, file, { upsert: true });
+                  
+                  if (uploadError) {
+                    toast({
+                      title: 'Error',
+                      description: 'No se pudo subir la imagen',
+                      variant: 'destructive',
+                    });
+                  } else {
+                    const { data: { publicUrl } } = supabase.storage
+                      .from('profile-images')
+                      .getPublicUrl(fileName);
+                    
+                    setFormData({ ...formData, profile_image_url: publicUrl });
+                    toast({
+                      title: 'Imagen subida',
+                      description: 'Recuerda guardar los cambios',
+                    });
+                  }
+                  setUploading(false);
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="gap-2"
+              >
+                <Upload className="h-4 w-4" />
+                {uploading ? 'Subiendo...' : 'Seleccionar imagen'}
+              </Button>
+            </div>
+          </div>
           <Input
             id="profile_image_url"
             value={formData.profile_image_url}
             onChange={(e) => setFormData({ ...formData, profile_image_url: e.target.value })}
-            placeholder="https://..."
+            placeholder="O pega una URL directamente..."
+            className="mt-2"
           />
         </div>
         
