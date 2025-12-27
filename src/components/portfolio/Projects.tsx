@@ -2,9 +2,15 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, Github, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useProjects } from "@/hooks/useProjects";
+import { useCaseStudies } from "@/hooks/useCaseStudies";
 
 export const Projects = () => {
   const { projects, loading } = useProjects();
+  const { caseStudies } = useCaseStudies();
+  
+  const hasCaseStudy = (projectId: string) => {
+    return caseStudies.some(cs => cs.project_id === projectId);
+  };
 
   if (loading) {
     return (
@@ -45,12 +51,19 @@ export const Projects = () => {
               
               {/* Case Study Button */}
               <div className="mb-3">
-                <Button variant="default" size="sm" className="w-full gap-2" asChild>
-                  <Link to={`/case-study/${project.id}`}>
+                {hasCaseStudy(project.id) ? (
+                  <Button variant="default" size="sm" className="w-full gap-2" asChild>
+                    <Link to={`/case-study/${project.id}`}>
+                      <FileText className="h-4 w-4" />
+                      Ver Case Study
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button variant="default" size="sm" className="w-full gap-2" disabled>
                     <FileText className="h-4 w-4" />
                     Ver Case Study
-                  </Link>
-                </Button>
+                  </Button>
+                )}
               </div>
               
               {/* Existing Dashboard & GitHub buttons */}
