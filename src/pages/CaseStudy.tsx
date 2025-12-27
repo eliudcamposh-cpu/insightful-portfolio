@@ -62,7 +62,7 @@ const CaseStudy = () => {
   const images = caseStudy?.images || [];
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen relative">
       <BackgroundPattern />
       
       {/* Header */}
