@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      case_studies: {
+        Row: {
+          analytical_approach: string
+          created_at: string
+          data_sources: string
+          id: string
+          images: string[]
+          key_insights: string[]
+          overview: string
+          project_id: string
+          recommendations: string[]
+          tools_used: string[]
+          updated_at: string
+        }
+        Insert: {
+          analytical_approach?: string
+          created_at?: string
+          data_sources?: string
+          id?: string
+          images?: string[]
+          key_insights?: string[]
+          overview?: string
+          project_id: string
+          recommendations?: string[]
+          tools_used?: string[]
+          updated_at?: string
+        }
+        Update: {
+          analytical_approach?: string
+          created_at?: string
+          data_sources?: string
+          id?: string
+          images?: string[]
+          key_insights?: string[]
+          overview?: string
+          project_id?: string
+          recommendations?: string[]
+          tools_used?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_studies_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           created_at: string

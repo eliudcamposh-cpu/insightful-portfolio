@@ -2,36 +2,64 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Database, BarChart3, Lightbulb, Target } from "lucide-react";
 import { useProjects } from "@/hooks/useProjects";
+import { useCaseStudyByProject } from "@/hooks/useCaseStudies";
 import BackgroundPattern from "@/components/BackgroundPattern";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const CaseStudy = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  const { projects, loading } = useProjects();
+  const { projects, loading: projectsLoading } = useProjects();
+  const { caseStudy, loading: caseStudyLoading } = useCaseStudyByProject(projectId);
   
   const project = projects.find(p => p.id === projectId);
+  const loading = projectsLoading || caseStudyLoading;
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Cargando...</p>
+      <div className="min-h-screen bg-background relative">
+        <BackgroundPattern />
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <p className="text-muted-foreground">Cargando...</p>
+        </div>
       </div>
     );
   }
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground">Proyecto no encontrado</p>
-        <Button asChild variant="outline">
-          <Link to="/#portfolio">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al Portfolio
-          </Link>
-        </Button>
+      <div className="min-h-screen bg-background relative">
+        <BackgroundPattern />
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen gap-4">
+          <p className="text-muted-foreground">Proyecto no encontrado</p>
+          <Button asChild variant="outline">
+            <Link to="/#portfolio">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Volver al Portfolio
+            </Link>
+          </Button>
+        </div>
       </div>
     );
   }
+
+  // Use case study data if available, otherwise use fallback placeholder content
+  const overview = caseStudy?.overview || `${project.description}\n\nEste proyecto aborda un problema de negocio común en el sector, donde la falta de visibilidad sobre los datos dificulta la toma de decisiones estratégicas.`;
+  const dataSources = caseStudy?.data_sources || "Datos sintéticos generados para simular un escenario empresarial realista, incluyendo métricas de rendimiento, datos de clientes y transacciones históricas.";
+  const toolsUsed = caseStudy?.tools_used?.length ? caseStudy.tools_used : project.tools;
+  const analyticalApproach = caseStudy?.analytical_approach || "El análisis se realizó siguiendo una metodología estructurada que incluye exploración de datos, limpieza y validación, análisis descriptivo con métricas clave, y visualización mediante dashboards interactivos.";
+  const keyInsights = caseStudy?.key_insights?.length ? caseStudy.key_insights : [
+    "Se identificó que el 20% de los clientes generan el 80% de los ingresos, confirmando la regla de Pareto.",
+    "Los picos de actividad se concentran en días específicos de la semana, sugiriendo oportunidades de optimización.",
+    "Existe una correlación significativa entre el tiempo de respuesta y la satisfacción del cliente.",
+    "Las tasas de conversión varían considerablemente según el canal de adquisición utilizado."
+  ];
+  const recommendations = caseStudy?.recommendations?.length ? caseStudy.recommendations : [
+    "Implementar programa de fidelización enfocado en retener a los clientes de alto valor.",
+    "Optimizar recursos según demanda basándose en los patrones de actividad detectados.",
+    "Mejorar tiempos de respuesta estableciendo SLAs más estrictos.",
+    "Revisar estrategia de canales reasignando presupuesto hacia los de mejor rendimiento."
+  ];
+  const images = caseStudy?.images || [];
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -75,13 +103,8 @@ const CaseStudy = () => {
             <h2 className="text-xl font-semibold">Resumen del Proyecto</h2>
           </div>
           <div className="bg-card border border-border rounded-lg p-6">
-            <p className="text-muted-foreground leading-relaxed">
-              {project.description}
-            </p>
-            <p className="text-muted-foreground leading-relaxed mt-4">
-              Este proyecto aborda un problema de negocio común en el sector, donde la falta de visibilidad 
-              sobre los datos dificulta la toma de decisiones estratégicas. El objetivo principal fue crear 
-              un sistema de análisis que permita identificar patrones, tendencias y oportunidades de mejora.
+            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+              {overview}
             </p>
           </div>
         </section>
@@ -98,16 +121,15 @@ const CaseStudy = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-medium mb-2">Fuente de Datos</h3>
-                <p className="text-muted-foreground text-sm">
-                  Datos sintéticos generados para simular un escenario empresarial realista, 
-                  incluyendo métricas de rendimiento, datos de clientes y transacciones históricas.
+                <p className="text-muted-foreground text-sm whitespace-pre-line">
+                  {dataSources}
                 </p>
               </div>
               <div>
                 <h3 className="font-medium mb-2">Herramientas Utilizadas</h3>
                 <ul className="text-muted-foreground text-sm space-y-1">
-                  {project.tools.map((tool) => (
-                    <li key={tool}>• {tool}</li>
+                  {toolsUsed.map((tool, index) => (
+                    <li key={index}>• {tool}</li>
                   ))}
                 </ul>
               </div>
@@ -124,23 +146,9 @@ const CaseStudy = () => {
             <h2 className="text-xl font-semibold">Enfoque Analítico</h2>
           </div>
           <div className="bg-card border border-border rounded-lg p-6">
-            <p className="text-muted-foreground leading-relaxed mb-4">
-              El análisis se realizó siguiendo una metodología estructurada en tres fases:
+            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+              {analyticalApproach}
             </p>
-            <ol className="text-muted-foreground space-y-3">
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-sm flex items-center justify-center font-medium">1</span>
-                <span><strong>Exploración de datos:</strong> Limpieza, validación y análisis exploratorio para entender la estructura y calidad de los datos.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-sm flex items-center justify-center font-medium">2</span>
-                <span><strong>Análisis descriptivo:</strong> Cálculo de métricas clave, segmentación y detección de patrones mediante consultas SQL.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-sm flex items-center justify-center font-medium">3</span>
-                <span><strong>Visualización:</strong> Creación de dashboards interactivos para comunicar los hallazgos de forma clara y accionable.</span>
-              </li>
-            </ol>
           </div>
         </section>
 
@@ -154,99 +162,50 @@ const CaseStudy = () => {
           </div>
           <div className="bg-card border border-border rounded-lg p-6">
             <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <span className="mt-1.5 w-2 h-2 rounded-full bg-primary flex-shrink-0" />
-                <span className="text-muted-foreground">Se identificó que el 20% de los clientes generan el 80% de los ingresos, confirmando la regla de Pareto.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1.5 w-2 h-2 rounded-full bg-primary flex-shrink-0" />
-                <span className="text-muted-foreground">Los picos de actividad se concentran en días específicos de la semana, sugiriendo oportunidades de optimización.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1.5 w-2 h-2 rounded-full bg-primary flex-shrink-0" />
-                <span className="text-muted-foreground">Existe una correlación significativa entre el tiempo de respuesta y la satisfacción del cliente.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1.5 w-2 h-2 rounded-full bg-primary flex-shrink-0" />
-                <span className="text-muted-foreground">Las tasas de conversión varían considerablemente según el canal de adquisición utilizado.</span>
-              </li>
+              {keyInsights.map((insight, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <span className="mt-1.5 w-2 h-2 rounded-full bg-primary flex-shrink-0" />
+                  <span className="text-muted-foreground">{insight}</span>
+                </li>
+              ))}
             </ul>
           </div>
         </section>
 
         {/* Section 5: Visual Evidence */}
-        <section className="mb-12">
-          <h2 className="text-xl font-semibold mb-4">Evidencia Visual</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-card border border-border rounded-lg overflow-hidden">
-              <div className="aspect-video bg-muted flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <BarChart3 className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Dashboard Screenshot</p>
+        {images.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-semibold mb-4">Evidencia Visual</h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              {images.map((imageUrl, index) => (
+                <div 
+                  key={index} 
+                  className={`bg-card border border-border rounded-lg overflow-hidden ${images.length === 1 || (images.length % 2 !== 0 && index === images.length - 1) ? 'md:col-span-2' : ''}`}
+                >
+                  <img 
+                    src={imageUrl} 
+                    alt={`Evidencia visual ${index + 1}`}
+                    className="w-full h-auto object-cover"
+                  />
                 </div>
-              </div>
-              <div className="p-3 border-t border-border">
-                <p className="text-sm text-muted-foreground">Vista general del dashboard principal</p>
-              </div>
+              ))}
             </div>
-            <div className="bg-card border border-border rounded-lg overflow-hidden">
-              <div className="aspect-video bg-muted flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <BarChart3 className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Chart Placeholder</p>
-                </div>
-              </div>
-              <div className="p-3 border-t border-border">
-                <p className="text-sm text-muted-foreground">Gráfico de tendencias temporales</p>
-              </div>
-            </div>
-            <div className="bg-card border border-border rounded-lg overflow-hidden md:col-span-2">
-              <div className="aspect-[21/9] bg-muted flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <Database className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">SQL Query Example</p>
-                </div>
-              </div>
-              <div className="p-3 border-t border-border">
-                <p className="text-sm text-muted-foreground">Ejemplo de consulta SQL utilizada en el análisis</p>
-              </div>
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Section 6: Business Recommendations */}
         <section className="mb-12">
           <h2 className="text-xl font-semibold mb-4">Recomendaciones de Negocio</h2>
           <div className="bg-card border border-border rounded-lg p-6">
             <div className="space-y-4">
-              <div className="flex gap-4 items-start">
-                <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center font-semibold">1</span>
-                <div>
-                  <h3 className="font-medium mb-1">Implementar programa de fidelización</h3>
-                  <p className="text-muted-foreground text-sm">Desarrollar un programa enfocado en retener a los clientes de alto valor identificados en el análisis.</p>
+              {recommendations.map((recommendation, index) => (
+                <div key={index} className="flex gap-4 items-start">
+                  <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-accent/10 text-accent-foreground flex items-center justify-center font-semibold">
+                    {index + 1}
+                  </span>
+                  <p className="text-muted-foreground pt-1">{recommendation}</p>
                 </div>
-              </div>
-              <div className="flex gap-4 items-start">
-                <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center font-semibold">2</span>
-                <div>
-                  <h3 className="font-medium mb-1">Optimizar recursos según demanda</h3>
-                  <p className="text-muted-foreground text-sm">Ajustar la asignación de recursos basándose en los patrones de actividad detectados.</p>
-                </div>
-              </div>
-              <div className="flex gap-4 items-start">
-                <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center font-semibold">3</span>
-                <div>
-                  <h3 className="font-medium mb-1">Mejorar tiempos de respuesta</h3>
-                  <p className="text-muted-foreground text-sm">Establecer SLAs más estrictos para mejorar la satisfacción del cliente.</p>
-                </div>
-              </div>
-              <div className="flex gap-4 items-start">
-                <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center font-semibold">4</span>
-                <div>
-                  <h3 className="font-medium mb-1">Revisar estrategia de canales</h3>
-                  <p className="text-muted-foreground text-sm">Reasignar presupuesto de marketing hacia los canales con mejor rendimiento.</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>
