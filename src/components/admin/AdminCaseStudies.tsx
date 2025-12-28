@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useCaseStudies, CaseStudy } from '@/hooks/useCaseStudies';
 import { useProjects } from '@/hooks/useProjects';
-import { Plus, Pencil, Trash2, Save, X, FileText } from 'lucide-react';
+import { Plus, Pencil, Trash2, Save, X, FileText, Upload, Image } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -30,6 +30,9 @@ export const AdminCaseStudies = () => {
   const [editingCaseStudy, setEditingCaseStudy] = useState<CaseStudy | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
     project_id: '',
@@ -54,6 +57,7 @@ export const AdminCaseStudies = () => {
       images: '',
     });
     setEditingCaseStudy(null);
+    setUploadedImages([]);
   };
 
   const openEditDialog = (caseStudy: CaseStudy) => {
@@ -68,12 +72,64 @@ export const AdminCaseStudies = () => {
       recommendations: caseStudy.recommendations.join('\n'),
       images: caseStudy.images.join('\n'),
     });
+    setUploadedImages(caseStudy.images);
     setIsDialogOpen(true);
   };
 
   const openNewDialog = () => {
     resetForm();
     setIsDialogOpen(true);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    const newImages: string[] = [];
+
+    for (const file of Array.from(files)) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `case-study-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('case-study-images')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) {
+        toast({
+          title: 'Error',
+          description: `No se pudo subir ${file.name}`,
+          variant: 'destructive',
+        });
+      } else {
+        const { data: { publicUrl } } = supabase.storage
+          .from('case-study-images')
+          .getPublicUrl(fileName);
+        newImages.push(publicUrl);
+      }
+    }
+
+    if (newImages.length > 0) {
+      const allImages = [...uploadedImages, ...newImages];
+      setUploadedImages(allImages);
+      setFormData(prev => ({ ...prev, images: allImages.join('\n') }));
+      toast({
+        title: 'Imágenes subidas',
+        description: `${newImages.length} imagen(es) subida(s) correctamente`,
+      });
+    }
+    
+    setUploading(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeImage = (indexToRemove: number) => {
+    const newImages = uploadedImages.filter((_, index) => index !== indexToRemove);
+    setUploadedImages(newImages);
+    setFormData(prev => ({ ...prev, images: newImages.join('\n') }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,7 +144,7 @@ export const AdminCaseStudies = () => {
       analytical_approach: formData.analytical_approach,
       key_insights: formData.key_insights.split('\n').map(t => t.trim()).filter(Boolean),
       recommendations: formData.recommendations.split('\n').map(t => t.trim()).filter(Boolean),
-      images: formData.images.split('\n').map(t => t.trim()).filter(Boolean),
+      images: uploadedImages,
     };
 
     let error;
@@ -267,14 +323,57 @@ export const AdminCaseStudies = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="images">URLs de Imágenes (una por línea)</Label>
-                <Textarea
-                  id="images"
-                  value={formData.images}
-                  onChange={(e) => setFormData({ ...formData, images: e.target.value })}
-                  placeholder="https://ejemplo.com/dashboard.png&#10;https://ejemplo.com/grafico.png"
-                  rows={3}
-                />
+                <Label>Imágenes del Caso de Estudio</Label>
+                
+                {/* Image previews */}
+                {uploadedImages.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {uploadedImages.map((url, index) => (
+                      <div key={index} className="relative group">
+                        <img 
+                          src={url} 
+                          alt={`Imagen ${index + 1}`} 
+                          className="w-full h-24 object-cover rounded-md border border-border"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Upload button */}
+                <div className="flex gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="gap-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    {uploading ? 'Subiendo...' : 'Subir imágenes'}
+                  </Button>
+                  {uploadedImages.length > 0 && (
+                    <span className="text-sm text-muted-foreground self-center">
+                      <Image className="h-4 w-4 inline mr-1" />
+                      {uploadedImages.length} imagen(es)
+                    </span>
+                  )}
+                </div>
               </div>
               
               <div className="flex justify-end gap-2 pt-4">
