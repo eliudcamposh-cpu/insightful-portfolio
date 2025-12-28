@@ -156,6 +156,8 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          about_text: string
+          contact_text: string
           created_at: string
           email: string | null
           github_url: string | null
@@ -168,6 +170,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          about_text?: string
+          contact_text?: string
           created_at?: string
           email?: string | null
           github_url?: string | null
@@ -180,6 +184,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          about_text?: string
+          contact_text?: string
           created_at?: string
           email?: string | null
           github_url?: string | null

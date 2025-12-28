@@ -5,19 +5,23 @@ interface ContactProps {
   linkedinUrl?: string;
   githubUrl?: string;
   email?: string;
+  contactText?: string;
 }
 
 export const Contact = ({
   linkedinUrl = "#",
   githubUrl = "#",
   email = "hello@example.com",
+  contactText,
 }: ContactProps) => {
+  const defaultText = "Currently exploring BI Analyst opportunities — let's discuss how I can add value to your team.";
+  
   return (
     <footer id="contact" className="py-24 px-6 bg-muted/30">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-2xl md:text-3xl font-bold mb-4">Get in Touch</h2>
         <p className="text-muted-foreground mb-8">
-          Currently exploring BI Analyst opportunities — let's discuss how I can add value to your team.
+          {contactText || defaultText}
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <Button asChild>

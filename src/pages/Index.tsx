@@ -25,13 +25,14 @@ const Index = () => {
         name={settings?.name || "Your Name"} 
         profileImageUrl={settings?.profile_image_url}
       />
-      <About />
+      <About aboutText={settings?.about_text} />
       <TechStack />
       <Projects />
       <Contact 
         linkedinUrl={settings?.linkedin_url || "#"}
         githubUrl={settings?.github_url || "#"}
         email={settings?.email || "hello@example.com"}
+        contactText={settings?.contact_text}
       />
     </main>
   );

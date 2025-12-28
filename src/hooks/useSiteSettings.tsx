@@ -10,6 +10,8 @@ export interface SiteSettings {
   linkedin_url: string | null;
   github_url: string | null;
   email: string | null;
+  about_text: string;
+  contact_text: string;
 }
 
 export const useSiteSettings = () => {
