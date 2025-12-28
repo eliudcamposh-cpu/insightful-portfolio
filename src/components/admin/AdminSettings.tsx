@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
@@ -22,6 +23,8 @@ export const AdminSettings = () => {
     linkedin_url: '',
     github_url: '',
     email: '',
+    about_text: '',
+    contact_text: '',
   });
 
   useEffect(() => {
@@ -34,6 +37,8 @@ export const AdminSettings = () => {
         linkedin_url: settings.linkedin_url || '',
         github_url: settings.github_url || '',
         email: settings.email || '',
+        about_text: settings.about_text || '',
+        contact_text: settings.contact_text || '',
       });
     }
   }, [settings]);
@@ -210,6 +215,28 @@ export const AdminSettings = () => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="about_text">Texto de About</Label>
+          <Textarea
+            id="about_text"
+            value={formData.about_text}
+            onChange={(e) => setFormData({ ...formData, about_text: e.target.value })}
+            placeholder="Describe tu experiencia y especialidades..."
+            rows={4}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="contact_text">Texto de Contacto</Label>
+          <Textarea
+            id="contact_text"
+            value={formData.contact_text}
+            onChange={(e) => setFormData({ ...formData, contact_text: e.target.value })}
+            placeholder="Mensaje para la sección de contacto..."
+            rows={2}
+          />
         </div>
         
         <Button type="submit" disabled={saving} className="gap-2">
