@@ -3,10 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { LogOut, Settings, FolderKanban, Mail, Home, FileText } from 'lucide-react';
+import { LogOut, Settings, FolderKanban, Home, FileText } from 'lucide-react';
 import { AdminSettings } from '@/components/admin/AdminSettings';
 import { AdminProjects } from '@/components/admin/AdminProjects';
-import { AdminMessages } from '@/components/admin/AdminMessages';
 import { AdminCaseStudies } from '@/components/admin/AdminCaseStudies';
 
 const Admin = () => {
@@ -62,7 +61,7 @@ const Admin = () => {
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         <Tabs defaultValue="settings" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="h-4 w-4" />
               Info Personal
@@ -74,10 +73,6 @@ const Admin = () => {
             <TabsTrigger value="case-studies" className="gap-2">
               <FileText className="h-4 w-4" />
               Casos de Estudio
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="gap-2">
-              <Mail className="h-4 w-4" />
-              Mensajes
             </TabsTrigger>
           </TabsList>
           
@@ -91,10 +86,6 @@ const Admin = () => {
           
           <TabsContent value="case-studies">
             <AdminCaseStudies />
-          </TabsContent>
-          
-          <TabsContent value="messages">
-            <AdminMessages />
           </TabsContent>
         </Tabs>
       </main>
